@@ -1979,7 +1979,7 @@ function runPayload(path) {
 
 kexploit().then((success) => {
   if (success) {
-    // runPayload("./payload.bin");
-    runBinLoader();
+    runPayload("./payload.bin");
+    // runBinLoader();
   }
 });
