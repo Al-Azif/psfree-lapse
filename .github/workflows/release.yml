@@ -26,6 +26,13 @@ jobs:
         with:
           name: kpatch
           path: src/kpatch/*.bin
+      
+      - name: Download latest hen.bin
+        run: |
+          hen_api_url="https://api.github.com/repos/Scene-Collective/ps4-hen/releases"
+          hen_bin_url=$(curl -s "$hen_api_url" | jq -r '[.[] | .assets[] | select(.name=="hen.bin")][0].browser_download_url')
+          echo "Downloading hen.bin from $hen_bin_url"
+          curl -L -o ../payload.bin "$hen_bin_url"
 
       - name: Archive repository
         run: |
