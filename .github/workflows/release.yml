@@ -20,6 +20,19 @@ jobs:
 
       - name: Build kpatch binaries
         run: make
+      
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: kpatch
+          path: src/kpatch/*.bin
+      
+      - name: Download latest hen.bin
+        run: |
+          hen_api_url="https://api.github.com/repos/Scene-Collective/ps4-hen/releases"
+          hen_bin_url=$(curl -s "$hen_api_url" | jq -r '[.[] | .assets[] | select(.name=="hen.bin")][0].browser_download_url')
+          echo "Downloading hen.bin from $hen_bin_url"
+          curl -L -o ../payload.bin "$hen_bin_url"
 
       - name: Archive repository
         run: |
@@ -34,3 +47,42 @@ jobs:
           files: psfree-lapse-*.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Prepare dist folder
+        run: |
+          mkdir -p dist
+          cp -r src/* dist/
+      
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: kpatch
+          path: dist/kpatch
+
+      - name: Download latest hen.bin
+        run: |
+          hen_api_url="https://api.github.com/repos/Scene-Collective/ps4-hen/releases"
+          hen_bin_url=$(curl -s "$hen_api_url" | jq -r '[.[] | .assets[] | select(.name=="hen.bin")][0].browser_download_url')
+          echo "Downloading hen.bin from $hen_bin_url"
+          curl -L -o dist/payload.bin "$hen_bin_url"
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+
