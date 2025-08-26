@@ -2,6 +2,8 @@
 
 PSFree is a collection of exploits for the PS4 console. The main focus of the repo is for the PS4, but we try to make things portable to PS5.
 
+[Visit the live version](https://mpaterakis.github.io/psfree-lapse)
+
 ## Features
 
 - **Auto-detection:** Automatically detects console type and firmware version (via `src/config.mjs`).
