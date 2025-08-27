@@ -1597,11 +1597,10 @@ async function patch_kernel(kbase, kmem, p_ucred, restore_info) {
 
   log("open JIT fds");
   const exec_fd = sysi("jitshm_create", 0, map_size, prot_rwx);
-  const write_fd = sysi("jitshm_alias", exec_fd, prot_rw);
 
   log("mmap for kpatch shellcode");
   const exec_addr = chain.sysp("mmap", exec_p, map_size, prot_rx, MAP_SHARED | MAP_FIXED, exec_fd, 0);
-  const write_addr = chain.sysp("mmap", write_p, map_size, prot_rw, MAP_SHARED | MAP_FIXED, write_fd, 0);
+  const write_addr = chain.sysp("mmap", write_p, map_size, prot_rw, MAP_SHARED | MAP_FIXED, exec_fd, 0);
 
   log(`exec_addr: ${exec_addr}`);
   log(`write_addr: ${write_addr}`);
